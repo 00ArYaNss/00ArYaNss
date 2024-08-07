@@ -1,0 +1,23 @@
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+IFSC_API_URL = "https://ifsc.razorpay.com/"
+
+@app.route('/verify_ifsc', methods=['GET'])
+def verify_ifsc():
+    ifsc_code = request.args.get('ifsc_code')
+
+    if not ifsc_code:
+        return jsonify({"error": "IFSC code is required"}), 400
+
+    response = requests.get(f"{IFSC_API_URL}{ifsc_code}")
+
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({"error": "Invalid IFSC code"}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
